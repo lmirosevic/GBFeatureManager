@@ -30,7 +30,28 @@
 static NSString * const kStorageKeyPrefix = @"gb-feature-manager-feature-id";
 static NSString * const kWildcardFeatureKey = @"gb-feature-manager-wildcard-feature-id";
 
+@interface GBFeatureManager ()
+
+@property (strong, nonatomic) NSMutableDictionary   *cache;
+
+@end
+
 @implementation GBFeatureManager
+
+#pragma mark - memory
+
+_singleton(GBFeatureManager, featureManagerSingleton)
+
+-(id)init {
+    if (self = [super init]) {
+        self.cache = [NSMutableDictionary new];
+    }
+    return self;
+}
+
+-(void)dealloc {
+    self.cache = nil;
+}
 
 #pragma mark - private API
 
@@ -40,6 +61,10 @@ static NSString * const kWildcardFeatureKey = @"gb-feature-manager-wildcard-feat
 
 +(void)_storeBoolean:(BOOL)boolean forKey:(NSString *)key {
     if (IsValidString(key)) {
+        //save to cache
+        [GBFeatureManager featureManagerSingleton].cache[key] = @(boolean);
+        
+        //save to disk
         GBStorage[key] = @(boolean);
         [GBStorage save];
     }
@@ -50,12 +75,29 @@ static NSString * const kWildcardFeatureKey = @"gb-feature-manager-wildcard-feat
 
 +(BOOL)_readBooleanForKey:(NSString *)key {
     if (IsValidString(key)) {
-        id result = GBStorage[key];
-        if ([result isMemberOfClass:[NSNumber class]] && [result boolValue]) {
-            return YES;
+        //check cache first
+        if (IsTruthy([GBFeatureManager featureManagerSingleton].cache[key])) {
+            return [[GBFeatureManager featureManagerSingleton].cache[key] boolValue];
         }
         else {
-            return NO;
+            //fetch from disk
+            id result = GBStorage[key];
+            
+            //update cache
+            if (IsTruthy(result)) {
+                [GBFeatureManager featureManagerSingleton].cache[key] = result;
+            }
+            else {
+                [GBFeatureManager featureManagerSingleton].cache[key] = @(NO);
+            }
+            
+            //boolianize result
+            if ([result isKindOfClass:[NSNumber class]] && [result boolValue]) {
+                return YES;
+            }
+            else {
+                return NO;
+            }
         }
     }
     else {

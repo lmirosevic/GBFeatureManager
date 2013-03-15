@@ -13,6 +13,7 @@
 		8ABE7CC816F346440015FE1F /* GBStorageController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8ABE7C6B16F33DDF0015FE1F /* GBStorageController.framework */; };
 		8ABE7CD216F346840015FE1F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8ABE7CD116F346840015FE1F /* Foundation.framework */; };
 		8ABE7CE416F346FD0015FE1F /* GBFeatureManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8ABE7C5716F33CAB0015FE1F /* GBFeatureManager.m */; };
+		8ABE7CF016F34DE80015FE1F /* GBToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8ABE7C8116F33E2E0015FE1F /* GBToolbox.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -121,6 +122,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8ABE7CF016F34DE80015FE1F /* GBToolbox.framework in Frameworks */,
 				8ABE7CC816F346440015FE1F /* GBStorageController.framework in Frameworks */,
 				8ABE7C4A16F33CAA0015FE1F /* Cocoa.framework in Frameworks */,
 			);
@@ -565,6 +567,7 @@
 				8ABE7CDB16F346840015FE1F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
