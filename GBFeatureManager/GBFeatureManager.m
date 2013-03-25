@@ -127,4 +127,12 @@ _singleton(GBFeatureManager, featureManagerSingleton)
     return [self _readBooleanForKey:kWildcardFeatureKey] || [self _readBooleanForKey:[self _storageKeyForFeatureID:featureID]];
 }
 
++(BOOL)areFeaturesAllUnlocked:(NSArray *)featureIDs {
+    return [[[featureIDs map:^id(id object) {
+        return @([self isFeatureUnlocked:object]);
+    }] reduce:^id(id objectA, id objectB) {
+        return @([objectA boolValue] && [objectB boolValue]);
+    } lastObject:@(YES)] boolValue];
+}
+
 @end

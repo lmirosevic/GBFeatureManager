@@ -26,5 +26,6 @@
 +(void)disableWildcardFeatureOverride;
 
 +(BOOL)isFeatureUnlocked:(NSString *)featureID;
++(BOOL)areFeaturesAllUnlocked:(NSArray *)featureIDs;
 
 @end
