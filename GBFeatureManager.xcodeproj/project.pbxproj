@@ -494,6 +494,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "GBFeatureManager/GBFeatureManager-OSX-Prefix.pch";
 				INFOPLIST_FILE = "GBFeatureManager/GBFeatureManager-Info.plist";
+				INSTALL_PATH = "@executable_path/../Frameworks";
 				PRODUCT_NAME = GBFeatureManager;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -509,6 +510,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "GBFeatureManager/GBFeatureManager-OSX-Prefix.pch";
 				INFOPLIST_FILE = "GBFeatureManager/GBFeatureManager-Info.plist";
+				INSTALL_PATH = "@executable_path/../Frameworks";
 				PRODUCT_NAME = GBFeatureManager;
 				WRAPPER_EXTENSION = framework;
 			};
