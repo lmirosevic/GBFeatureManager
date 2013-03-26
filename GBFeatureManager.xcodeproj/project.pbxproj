@@ -102,6 +102,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		8A521B6B1701D21300A89BE4 /* GBFeatureManager-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GBFeatureManager-Info.plist"; sourceTree = "<group>"; };
 		8ABE7C4616F33CAA0015FE1F /* GBFeatureManager.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GBFeatureManager.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8ABE7C4916F33CAA0015FE1F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		8ABE7C4C16F33CAA0015FE1F /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -191,6 +192,7 @@
 		8ABE7C5016F33CAA0015FE1F /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				8A521B6B1701D21300A89BE4 /* GBFeatureManager-Info.plist */,
 				8ABE7CE516F347380015FE1F /* GBFeatureManager-iOS-Prefix.pch */,
 				8ABE7C5516F33CAA0015FE1F /* GBFeatureManager-OSX-Prefix.pch */,
 			);
@@ -491,6 +493,7 @@
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "GBFeatureManager/GBFeatureManager-OSX-Prefix.pch";
+				INFOPLIST_FILE = "GBFeatureManager/GBFeatureManager-Info.plist";
 				PRODUCT_NAME = GBFeatureManager;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -505,6 +508,7 @@
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "GBFeatureManager/GBFeatureManager-OSX-Prefix.pch";
+				INFOPLIST_FILE = "GBFeatureManager/GBFeatureManager-Info.plist";
 				PRODUCT_NAME = GBFeatureManager;
 				WRAPPER_EXTENSION = framework;
 			};
