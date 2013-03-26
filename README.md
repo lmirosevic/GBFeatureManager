@@ -24,7 +24,7 @@ Check to see if a feature is unlocked:
 [GBFeatureManager isFeatureUnlocked:@"speedBoost"];		//Returns: YES or NO
 ```
 
-If you want to unlock all features + any future features, think of it as an "all features unlocked override" (this will supersede any individual setting):
+If you want to unlock all features + any future features, think of it as an "all features unlocked override" (N.B. this will supersede any individual setting):
 
 ```objective-c
 [GBFeatureManager enableWildcardFeatureOverride];
@@ -35,6 +35,15 @@ To turn off the "all features unlocked override":
 ```objective-c
 [GBFeatureManager disableWildcardFeatureOverride];
 ```
+
+To enabled features by default (e.g. Pro version), you can unlock some features directly in the Info.plist by adding it as a key to the Plist, prefixed by `GBFeatureManager:` and setting the value to a Boolean.
+
+```xml
+<key>GBFeatureManager:com.goonbee.proVersion</key>
+<true/>
+```
+
+...normally you would do this in Xcode's Plist editor by simply adding a new row with the key `GBFeatureManager:com.goonbee.proVersion`, setting the type to `Boolean` and the value to either `YES` or `NO`.
 
 Don't forget to import header, for iOS:
 
