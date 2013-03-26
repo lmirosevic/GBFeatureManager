@@ -27,7 +27,8 @@
     #import <GBToolbox/GBToolbox.h>
 #endif
 
-static NSString * const kStorageKeyPrefix = @"gb-feature-manager-feature-id";
+static NSString * const kStorageKeyDiskPrefix = @"gb-feature-manager-feature-id-";
+static NSString * const kStorageKeyPlistPrefix = @"GBFeatureManager:";
 static NSString * const kWildcardFeatureKey = @"gb-feature-manager-wildcard-feature-id";
 
 @interface GBFeatureManager ()
@@ -55,17 +56,21 @@ _singleton(GBFeatureManager, featureManagerSingleton)
 
 #pragma mark - private API
 
-+(NSString *)_storageKeyForFeatureID:(NSString *)featureID {
-    return _f(@"%@-%@", kStorageKeyPrefix, featureID);
++(NSString *)_diskStorageKeyForFeatureID:(NSString *)featureID {
+    return _f(@"%@%@", kStorageKeyDiskPrefix, featureID);
 }
 
-+(void)_storeBoolean:(BOOL)boolean forKey:(NSString *)key {
-    if (IsValidString(key)) {
++(NSString *)_plistStorageKeyForFeatureID:(NSString *)featureID {
+    return _f(@"%@%@", kStorageKeyPlistPrefix, featureID);
+}
+
++(void)_storeBoolean:(BOOL)boolean forKey:(NSString *)featureID {
+    if (IsValidString(featureID)) {
         //save to cache
-        [GBFeatureManager featureManagerSingleton].cache[key] = @(boolean);
+        [GBFeatureManager featureManagerSingleton].cache[featureID] = @(boolean);
         
         //save to disk
-        GBStorage[key] = @(boolean);
+        GBStorage[[self _diskStorageKeyForFeatureID:featureID]] = @(boolean);
         [GBStorage save];
     }
     else {
@@ -73,25 +78,30 @@ _singleton(GBFeatureManager, featureManagerSingleton)
     }
 }
 
-+(BOOL)_readBooleanForKey:(NSString *)key {
-    if (IsValidString(key)) {
++(BOOL)_readBooleanForKey:(NSString *)featureID {
+    if (IsValidString(featureID)) {
         //check cache first
-        if (IsTruthy([GBFeatureManager featureManagerSingleton].cache[key])) {
-            return [[GBFeatureManager featureManagerSingleton].cache[key] boolValue];
+        if (IsTruthy([GBFeatureManager featureManagerSingleton].cache[featureID])) {
+            return [[GBFeatureManager featureManagerSingleton].cache[featureID] boolValue];
         }
         else {
             //fetch from disk
-            id result = GBStorage[key];
+            id result = GBStorage[[self _diskStorageKeyForFeatureID:featureID]];
+            
+            //try to fallback to reading from plist
+            if (IsFalsy(result)) {
+                result = InfoPlist[[self _plistStorageKeyForFeatureID:featureID]];
+            }
             
             //update cache
             if (IsTruthy(result)) {
-                [GBFeatureManager featureManagerSingleton].cache[key] = result;
+                [GBFeatureManager featureManagerSingleton].cache[featureID] = result;
             }
             else {
-                [GBFeatureManager featureManagerSingleton].cache[key] = @(NO);
+                [GBFeatureManager featureManagerSingleton].cache[featureID] = @(NO);
             }
             
-            //boolianize result
+            //booleanize result
             if ([result isKindOfClass:[NSNumber class]] && [result boolValue]) {
                 return YES;
             }
@@ -108,11 +118,11 @@ _singleton(GBFeatureManager, featureManagerSingleton)
 #pragma mark - public API
 
 +(void)unlockFeature:(NSString *)featureID {
-    [self _storeBoolean:YES forKey:[self _storageKeyForFeatureID:featureID]];
+    [self _storeBoolean:YES forKey:featureID];
 }
 
 +(void)lockFeature:(NSString *)featureID {
-    [self _storeBoolean:NO forKey:[self _storageKeyForFeatureID:featureID]];
+    [self _storeBoolean:NO forKey:featureID];
 }
 
 +(void)enableWildcardFeatureOverride {
@@ -124,7 +134,7 @@ _singleton(GBFeatureManager, featureManagerSingleton)
 }
 
 +(BOOL)isFeatureUnlocked:(NSString *)featureID {
-    return [self _readBooleanForKey:kWildcardFeatureKey] || [self _readBooleanForKey:[self _storageKeyForFeatureID:featureID]];
+    return [self _readBooleanForKey:kWildcardFeatureKey] || [self _readBooleanForKey:featureID];
 }
 
 +(BOOL)areFeaturesAllUnlocked:(NSArray *)featureIDs {
