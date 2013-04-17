@@ -145,4 +145,12 @@ _singleton(GBFeatureManager, featureManagerSingleton)
     } lastObject:@(YES)] boolValue];
 }
 
++(BOOL)areFeaturesAnyUnlocked:(NSArray *)featureIDs {
+    return [[[featureIDs map:^id(id object) {
+        return @([self isFeatureUnlocked:object]);
+    }] reduce:^id(id objectA, id objectB) {
+        return @([objectA boolValue] || [objectB boolValue]);
+    } lastObject:@(NO)] boolValue];
+}
+
 @end

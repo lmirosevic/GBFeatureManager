@@ -27,5 +27,6 @@
 
 +(BOOL)isFeatureUnlocked:(NSString *)featureID;
 +(BOOL)areFeaturesAllUnlocked:(NSArray *)featureIDs;
++(BOOL)areFeaturesAnyUnlocked:(NSArray *)featureIDs;
 
 @end
