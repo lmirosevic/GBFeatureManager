@@ -17,14 +17,25 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
+//Notifications
+extern NSString * const kGBFeatureManagerFeatureUnlockedNotification;
+extern NSString * const kGBFeatureManagerFeatureLockedNotification;
+extern NSString * const kGBFeatureManagerFeatureIdentifierKey;//get the value for this key in the userInfo dict to find out which feature was unlocked
+
+extern NSString * const kGBFeatureManagerWildcardFeatureOverrideEnabledNotification;
+extern NSString * const kGBFeatureManagerWildcardFeatureOverrideDisabledNotification;
+
 @interface GBFeatureManager : NSObject
 
+//Simple feature unlocking
 +(void)unlockFeature:(NSString *)featureID;
 +(void)lockFeature:(NSString *)featureID;
 
+//Wildcard feature override... to unlock all possible features
 +(void)enableWildcardFeatureOverride;
 +(void)disableWildcardFeatureOverride;
 
+//Checking whether a feature is unlocked
 +(BOOL)isFeatureUnlocked:(NSString *)featureID;
 +(BOOL)areFeaturesAllUnlocked:(NSArray *)featureIDs;
 +(BOOL)areFeaturesAnyUnlocked:(NSArray *)featureIDs;

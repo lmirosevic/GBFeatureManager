@@ -27,6 +27,13 @@
     #import <GBToolbox/GBToolbox.h>
 #endif
 
+//Notifications
+NSString * const kGBFeatureManagerFeatureIdentifierKey =                            @"kGBFeatureManagerFeatureIdentifierKey";
+NSString * const kGBFeatureManagerFeatureUnlockedNotification =                     @"kGBFeatureManagerFeatureUnlockedNotification";
+NSString * const kGBFeatureManagerFeatureLockedNotification =                       @"kGBFeatureManagerFeatureLockedNotification";
+NSString * const kGBFeatureManagerWildcardFeatureOverrideEnabledNotification =      @"kGBFeatureManagerWildcardFeatureOverrideEnabledNotification";
+NSString * const kGBFeatureManagerWildcardFeatureOverrideDisabledNotification =     @"kGBFeatureManagerWildcardFeatureOverrideDisabledNotification";
+
 static NSString * const kStorageKeyDiskPrefix = @"gb-feature-manager-feature-id-";
 static NSString * const kStorageKeyPlistPrefix = @"GBFeatureManager:";
 static NSString * const kWildcardFeatureKey = @"gb-feature-manager-wildcard-feature-id";
@@ -119,18 +126,22 @@ _singleton(GBFeatureManager, featureManagerSingleton)
 
 +(void)unlockFeature:(NSString *)featureID {
     [self _storeBoolean:YES forKey:featureID];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kGBFeatureManagerFeatureUnlockedNotification object:self userInfo:@{kGBFeatureManagerFeatureIdentifierKey: featureID}];
 }
 
 +(void)lockFeature:(NSString *)featureID {
     [self _storeBoolean:NO forKey:featureID];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kGBFeatureManagerFeatureLockedNotification object:self userInfo:@{kGBFeatureManagerFeatureIdentifierKey: featureID}];
 }
 
 +(void)enableWildcardFeatureOverride {
     [self _storeBoolean:YES forKey:kWildcardFeatureKey];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kGBFeatureManagerWildcardFeatureOverrideEnabledNotification object:self];
 }
 
 +(void)disableWildcardFeatureOverride {
     [self _storeBoolean:NO forKey:kWildcardFeatureKey];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kGBFeatureManagerWildcardFeatureOverrideDisabledNotification object:self];
 }
 
 +(BOOL)isFeatureUnlocked:(NSString *)featureID {
