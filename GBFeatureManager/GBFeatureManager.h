@@ -17,6 +17,10 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
+//Handlers
+typedef void(^GBFeatureManagerFeatureStateChangedUpdateHandler)(NSString *featureIdentifier);
+typedef void(^GBFeatureManagerGenericHandler)(void);
+
 //Notifications
 extern NSString * const kGBFeatureManagerFeatureUnlockedNotification;
 extern NSString * const kGBFeatureManagerFeatureLockedNotification;
@@ -39,5 +43,13 @@ extern NSString * const kGBFeatureManagerWildcardFeatureOverrideDisabledNotifica
 +(BOOL)isFeatureUnlocked:(NSString *)featureID;
 +(BOOL)areFeaturesAllUnlocked:(NSArray *)featureIDs;
 +(BOOL)areFeaturesAnyUnlocked:(NSArray *)featureIDs;
+
+//Registering handlers for when features get locked/unlocked, etc.
++(void)addHandlerForDidUnlockFeature:(GBFeatureManagerFeatureStateChangedUpdateHandler)handler;
++(void)addHandlerForDidLockFeature:(GBFeatureManagerFeatureStateChangedUpdateHandler)handler;
+
++(void)addHandlerForDidEnableWildcardFeatureOverride:(GBFeatureManagerGenericHandler)handler;
++(void)addHandlerForDidDisableWildcardFeatureOverride:(GBFeatureManagerGenericHandler)handler;
+
 
 @end
