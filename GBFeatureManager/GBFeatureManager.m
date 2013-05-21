@@ -197,19 +197,19 @@ _lazy(NSMutableArray, didDisableWildcardOverrideHandlers, _didDisableWildcardOve
 }
 
 +(void)addHandlerForDidUnlockFeature:(GBFeatureManagerFeatureStateChangedUpdateHandler)handler {
-    [[GBFeatureManager featureManagerSingleton].didUnlockFeatureHandlers addObject:[handler copy]];
+    if (handler) [[GBFeatureManager featureManagerSingleton].didUnlockFeatureHandlers addObject:[handler copy]];
 }
 
 +(void)addHandlerForDidLockFeature:(GBFeatureManagerFeatureStateChangedUpdateHandler)handler {
-    [[GBFeatureManager featureManagerSingleton].didLockFeatureHandlers addObject:[handler copy]];
+    if (handler) [[GBFeatureManager featureManagerSingleton].didLockFeatureHandlers addObject:[handler copy]];
 }
 
 +(void)addHandlerForDidEnableWildcardFeatureOverride:(GBFeatureManagerGenericHandler)handler {
-    [[GBFeatureManager featureManagerSingleton].didEnableWildcardOverrideHandlers addObject:[handler copy]];
+    if (handler) [[GBFeatureManager featureManagerSingleton].didEnableWildcardOverrideHandlers addObject:[handler copy]];
 }
 
 +(void)addHandlerForDidDisableWildcardFeatureOverride:(GBFeatureManagerGenericHandler)handler {
-    [[GBFeatureManager featureManagerSingleton].didDisableWildcardOverrideHandlers addObject:[handler copy]];
+    if (handler) [[GBFeatureManager featureManagerSingleton].didDisableWildcardOverrideHandlers addObject:[handler copy]];
 }
 
 @end
