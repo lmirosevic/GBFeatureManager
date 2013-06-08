@@ -60,7 +60,7 @@ Don't forget to import header, for iOS:
 Storage mechanics
 ------------
 
-Features are each stored to disk in simple serialized NSNumber object to NSDocumentsDirectory on iOS, or NSApplicationSupportDirectory OS X.
+Features are each stored to disk in simple serialized NSNumber objects to the NSDocumentsDirectory on iOS, or NSApplicationSupportDirectory OS X.
 
 When checking whether a feature is available, the disk is only accessed the first time, and the result is cached in memory, subsequent checks never hit the disk.
 
