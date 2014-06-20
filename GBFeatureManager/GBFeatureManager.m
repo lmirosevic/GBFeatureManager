@@ -19,13 +19,8 @@
 
 #import "GBFeatureManager.h"
 
-#if TARGET_OS_IPHONE
-    #import "GBStorageController.h"
-    #import "GBToolbox.h"
-#else
-    #import <GBStorageController/GBStorageController.h>
-    #import <GBToolbox/GBToolbox.h>
-#endif
+#import <GBStorage/GBStorage.h>
+#import <GBToolbox/GBToolbox.h>
 
 //Notifications
 NSString * const kGBFeatureManagerFeatureIdentifierKey =                            @"kGBFeatureManagerFeatureIdentifierKey";
@@ -34,9 +29,9 @@ NSString * const kGBFeatureManagerFeatureLockedNotification =                   
 NSString * const kGBFeatureManagerWildcardFeatureOverrideEnabledNotification =      @"kGBFeatureManagerWildcardFeatureOverrideEnabledNotification";
 NSString * const kGBFeatureManagerWildcardFeatureOverrideDisabledNotification =     @"kGBFeatureManagerWildcardFeatureOverrideDisabledNotification";
 
-static NSString * const kStorageKeyDiskPrefix = @"gb-feature-manager-feature-id-";
-static NSString * const kStorageKeyPlistPrefix = @"GBFeatureManager:";
-static NSString * const kWildcardFeatureKey = @"gb-feature-manager-wildcard-feature-id";
+static NSString * const kStorageNamespace =                                         @"GBFeatureManager";
+static NSString * const kStorageKeyDiskPrefix =                                     @"FeatureID";
+static NSString * const kWildcardFeatureKey =                                       @"WildcardFeatureID";
 
 @interface GBFeatureManager ()
 
@@ -79,22 +74,14 @@ _lazy(NSMutableArray, didDisableWildcardOverrideHandlers, _didDisableWildcardOve
 
 #pragma mark - private API
 
-+(NSString *)_diskStorageKeyForFeatureID:(NSString *)featureID {
-    return _f(@"%@%@", kStorageKeyDiskPrefix, featureID);
-}
-
-+(NSString *)_plistStorageKeyForFeatureID:(NSString *)featureID {
-    return _f(@"%@%@", kStorageKeyPlistPrefix, featureID);
++(NSString *)_storageKeyForFeatureID:(NSString *)featureID {
+    return _f(@"%@.%@", kStorageKeyDiskPrefix, featureID);
 }
 
 +(void)_storeBoolean:(BOOL)boolean forKey:(NSString *)featureID {
     if (IsValidString(featureID)) {
-        //save to cache
-        [GBFeatureManager featureManagerSingleton].cache[featureID] = @(boolean);
-        
-        //save to disk
-        GBStorage[[self _diskStorageKeyForFeatureID:featureID]] = @(boolean);
-        [GBStorage save];
+        GBStorage(kStorageNamespace)[[self _storageKeyForFeatureID:featureID]] = @(boolean);
+        [GBStorage(kStorageNamespace) save:[self _storageKeyForFeatureID:featureID]];
     }
     else {
         @throw [NSException exceptionWithName:@"GBFeatureManager error" reason:@"key must be non-empty NSString" userInfo:nil];
@@ -103,34 +90,14 @@ _lazy(NSMutableArray, didDisableWildcardOverrideHandlers, _didDisableWildcardOve
 
 +(BOOL)_readBooleanForKey:(NSString *)featureID {
     if (IsValidString(featureID)) {
-        //check cache first
-        if (IsTruthy([GBFeatureManager featureManagerSingleton].cache[featureID])) {
-            return [[GBFeatureManager featureManagerSingleton].cache[featureID] boolValue];
+        id result = GBStorage(kStorageNamespace)[[self _storageKeyForFeatureID:featureID]];
+        
+        //booleanize result
+        if ([result isKindOfClass:[NSNumber class]] && [result boolValue]) {
+            return YES;
         }
         else {
-            //fetch from disk
-            id result = GBStorage[[self _diskStorageKeyForFeatureID:featureID]];
-            
-            //try to fallback to reading from plist
-            if (IsFalsy(result)) {
-                result = InfoPlist[[self _plistStorageKeyForFeatureID:featureID]];
-            }
-            
-            //update cache
-            if (IsTruthy(result)) {
-                [GBFeatureManager featureManagerSingleton].cache[featureID] = result;
-            }
-            else {
-                [GBFeatureManager featureManagerSingleton].cache[featureID] = @(NO);
-            }
-            
-            //booleanize result
-            if ([result isKindOfClass:[NSNumber class]] && [result boolValue]) {
-                return YES;
-            }
-            else {
-                return NO;
-            }
+            return NO;
         }
     }
     else {
