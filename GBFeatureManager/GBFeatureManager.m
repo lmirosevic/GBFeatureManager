@@ -49,7 +49,7 @@ static NSString * const kWildcardFeatureKey =                                   
 
 #pragma mark - memory
 
-_singleton(GBFeatureManager, featureManagerSingleton)
+_singleton(sharedFeatureManager)
 
 _lazy(NSMutableArray, didUnlockFeatureHandlers, _didUnlockFeatureHandlers)
 _lazy(NSMutableArray, didLockFeatureHandlers, _didLockFeatureHandlers)
