@@ -11,6 +11,6 @@ Pod::Spec.new do |s|
   s.public_header_files = 'GBFeatureManager/GBFeatureManager.h'
   s.requires_arc = true
 
-  s.dependency 'GBToolbox'
+  s.dependency 'GBToolbox', '>= 22.4'
   s.dependency 'GBStorage', '~> 2.1'
 end

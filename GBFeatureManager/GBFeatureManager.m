@@ -22,7 +22,7 @@
 #import <GBStorage/GBStorage.h>
 #import <GBToolbox/GBToolbox.h>
 
-//Notifications
+// Notifications
 NSString * const kGBFeatureManagerFeatureIdentifierKey =                            @"kGBFeatureManagerFeatureIdentifierKey";
 NSString * const kGBFeatureManagerFeatureUnlockedNotification =                     @"kGBFeatureManagerFeatureUnlockedNotification";
 NSString * const kGBFeatureManagerFeatureLockedNotification =                       @"kGBFeatureManagerFeatureLockedNotification";
@@ -37,7 +37,7 @@ static NSString * const kWildcardFeatureKey =                                   
 
 @property (strong, nonatomic) NSMutableDictionary   *cache;
 
-//handlers
+// Handlers
 @property (strong, nonatomic) NSMutableArray *didUnlockFeatureHandlers;
 @property (strong, nonatomic) NSMutableArray *didLockFeatureHandlers;
 @property (strong, nonatomic) NSMutableArray *didEnableWildcardOverrideHandlers;
@@ -56,14 +56,14 @@ _lazy(NSMutableArray, didLockFeatureHandlers, _didLockFeatureHandlers)
 _lazy(NSMutableArray, didEnableWildcardOverrideHandlers, _didEnableWildcardOverrideHandlers)
 _lazy(NSMutableArray, didDisableWildcardOverrideHandlers, _didDisableWildcardOverrideHandlers)
 
--(id)init {
+- (id)init {
     if (self = [super init]) {
         self.cache = [NSMutableDictionary new];
     }
     return self;
 }
 
--(void)dealloc {
+- (void)dealloc {
     self.cache = nil;
     
     self.didUnlockFeatureHandlers = nil;
@@ -74,11 +74,11 @@ _lazy(NSMutableArray, didDisableWildcardOverrideHandlers, _didDisableWildcardOve
 
 #pragma mark - private API
 
-+(NSString *)_storageKeyForFeatureID:(NSString *)featureID {
++ (NSString *)_storageKeyForFeatureID:(NSString *)featureID {
     return _f(@"%@.%@", kStorageKeyDiskPrefix, featureID);
 }
 
-+(void)_storeBoolean:(BOOL)boolean forKey:(NSString *)featureID {
++ (void)_storeBoolean:(BOOL)boolean forKey:(NSString *)featureID {
     if (IsValidString(featureID)) {
         GBStorage(kStorageNamespace)[[self _storageKeyForFeatureID:featureID]] = @(boolean);
         [GBStorage(kStorageNamespace) save:[self _storageKeyForFeatureID:featureID]];
@@ -88,7 +88,7 @@ _lazy(NSMutableArray, didDisableWildcardOverrideHandlers, _didDisableWildcardOve
     }
 }
 
-+(BOOL)_readBooleanForKey:(NSString *)featureID {
++ (BOOL)_readBooleanForKey:(NSString *)featureID {
     if (IsValidString(featureID)) {
         id result = GBStorage(kStorageNamespace)[[self _storageKeyForFeatureID:featureID]];
         
@@ -107,47 +107,47 @@ _lazy(NSMutableArray, didDisableWildcardOverrideHandlers, _didDisableWildcardOve
 
 #pragma mark - public API
 
-+(void)unlockFeature:(NSString *)featureID {
++ (void)unlockFeature:(NSString *)featureID {
     [self _storeBoolean:YES forKey:featureID];
     [[NSNotificationCenter defaultCenter] postNotificationName:kGBFeatureManagerFeatureUnlockedNotification object:self userInfo:@{kGBFeatureManagerFeatureIdentifierKey: featureID}];
     
-    for (GBFeatureManagerFeatureStateChangedUpdateHandler handler in [GBFeatureManager featureManagerSingleton].didUnlockFeatureHandlers) {
+    for (GBFeatureManagerFeatureStateChangedUpdateHandler handler in [GBFeatureManager sharedFeatureManager].didUnlockFeatureHandlers) {
         handler(featureID);
     }
 }
 
-+(void)lockFeature:(NSString *)featureID {
++ (void)lockFeature:(NSString *)featureID {
     [self _storeBoolean:NO forKey:featureID];
     [[NSNotificationCenter defaultCenter] postNotificationName:kGBFeatureManagerFeatureLockedNotification object:self userInfo:@{kGBFeatureManagerFeatureIdentifierKey: featureID}];
     
-    for (GBFeatureManagerFeatureStateChangedUpdateHandler handler in [GBFeatureManager featureManagerSingleton].didLockFeatureHandlers) {
+    for (GBFeatureManagerFeatureStateChangedUpdateHandler handler in [GBFeatureManager sharedFeatureManager].didLockFeatureHandlers) {
         handler(featureID);
     }
 }
 
-+(void)enableWildcardFeatureOverride {
++ (void)enableWildcardFeatureOverride {
     [self _storeBoolean:YES forKey:kWildcardFeatureKey];
     [[NSNotificationCenter defaultCenter] postNotificationName:kGBFeatureManagerWildcardFeatureOverrideEnabledNotification object:self];
     
-    for (GBFeatureManagerGenericHandler handler in [GBFeatureManager featureManagerSingleton].didEnableWildcardOverrideHandlers) {
+    for (GBFeatureManagerGenericHandler handler in [GBFeatureManager sharedFeatureManager].didEnableWildcardOverrideHandlers) {
         handler();
     }
 }
 
-+(void)disableWildcardFeatureOverride {
++ (void)disableWildcardFeatureOverride {
     [self _storeBoolean:NO forKey:kWildcardFeatureKey];
     [[NSNotificationCenter defaultCenter] postNotificationName:kGBFeatureManagerWildcardFeatureOverrideDisabledNotification object:self];
     
-    for (GBFeatureManagerGenericHandler handler in [GBFeatureManager featureManagerSingleton].didDisableWildcardOverrideHandlers) {
+    for (GBFeatureManagerGenericHandler handler in [GBFeatureManager sharedFeatureManager].didDisableWildcardOverrideHandlers) {
         handler();
     }
 }
 
-+(BOOL)isFeatureUnlocked:(NSString *)featureID {
++ (BOOL)isFeatureUnlocked:(NSString *)featureID {
     return [self _readBooleanForKey:kWildcardFeatureKey] || [self _readBooleanForKey:featureID];
 }
 
-+(BOOL)areFeaturesAllUnlocked:(NSArray *)featureIDs {
++ (BOOL)areFeaturesAllUnlocked:(NSArray *)featureIDs {
     return [[[featureIDs map:^id(id object) {
         return @([self isFeatureUnlocked:object]);
     }] reduce:^id(id objectA, id objectB) {
@@ -155,7 +155,7 @@ _lazy(NSMutableArray, didDisableWildcardOverrideHandlers, _didDisableWildcardOve
     } lastObject:@(YES)] boolValue];
 }
 
-+(BOOL)areFeaturesAnyUnlocked:(NSArray *)featureIDs {
++ (BOOL)areFeaturesAnyUnlocked:(NSArray *)featureIDs {
     return [[[featureIDs map:^id(id object) {
         return @([self isFeatureUnlocked:object]);
     }] reduce:^id(id objectA, id objectB) {
@@ -163,20 +163,20 @@ _lazy(NSMutableArray, didDisableWildcardOverrideHandlers, _didDisableWildcardOve
     } lastObject:@(NO)] boolValue];
 }
 
-+(void)addHandlerForDidUnlockFeature:(GBFeatureManagerFeatureStateChangedUpdateHandler)handler {
-    if (handler) [[GBFeatureManager featureManagerSingleton].didUnlockFeatureHandlers addObject:[handler copy]];
++ (void)addHandlerForDidUnlockFeature:(GBFeatureManagerFeatureStateChangedUpdateHandler)handler {
+    if (handler) [[GBFeatureManager sharedFeatureManager].didUnlockFeatureHandlers addObject:[handler copy]];
 }
 
-+(void)addHandlerForDidLockFeature:(GBFeatureManagerFeatureStateChangedUpdateHandler)handler {
-    if (handler) [[GBFeatureManager featureManagerSingleton].didLockFeatureHandlers addObject:[handler copy]];
++ (void)addHandlerForDidLockFeature:(GBFeatureManagerFeatureStateChangedUpdateHandler)handler {
+    if (handler) [[GBFeatureManager sharedFeatureManager].didLockFeatureHandlers addObject:[handler copy]];
 }
 
-+(void)addHandlerForDidEnableWildcardFeatureOverride:(GBFeatureManagerGenericHandler)handler {
-    if (handler) [[GBFeatureManager featureManagerSingleton].didEnableWildcardOverrideHandlers addObject:[handler copy]];
++ (void)addHandlerForDidEnableWildcardFeatureOverride:(GBFeatureManagerGenericHandler)handler {
+    if (handler) [[GBFeatureManager sharedFeatureManager].didEnableWildcardOverrideHandlers addObject:[handler copy]];
 }
 
-+(void)addHandlerForDidDisableWildcardFeatureOverride:(GBFeatureManagerGenericHandler)handler {
-    if (handler) [[GBFeatureManager featureManagerSingleton].didDisableWildcardOverrideHandlers addObject:[handler copy]];
++ (void)addHandlerForDidDisableWildcardFeatureOverride:(GBFeatureManagerGenericHandler)handler {
+    if (handler) [[GBFeatureManager sharedFeatureManager].didDisableWildcardOverrideHandlers addObject:[handler copy]];
 }
 
 @end
