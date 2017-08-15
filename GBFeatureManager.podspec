@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = 'GBFeatureManager'
-  s.version      = '1.1.0'
+  s.version      = '2.0.0'
   s.summary      = 'Simple iOS and Mac OS X feature manager for unlocking functionality (e.g. for IAP purchases).'
   s.homepage     = 'https://github.com/lmirosevic/GBFeatureManager'
   s.license      = 'Apache License, Version 2.0'
